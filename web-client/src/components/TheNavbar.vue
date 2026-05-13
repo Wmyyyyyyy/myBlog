@@ -1,86 +1,130 @@
 <template>
   <nav class="navbar">
-    <div class="navbar-container">
-      <router-link to="/blogs" class="logo">
-        <el-icon><document /></el-icon>
-        <span>我的博客</span>
+    <div class="navbar-inner">
+      <router-link to="/blogs" class="navbar-brand">
+        <div class="navbar-brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <span class="navbar-brand-text">静心启慧</span>
       </router-link>
-      <div class="nav-links">
-        <template v-if="isLoggedIn">
-          <span class="username">{{ user?.username }}</span>
-          <el-button type="danger" size="small" @click="handleLogout">退出</el-button>
-        </template>
-        <template v-else>
-          <router-link to="/login">
-            <el-button type="primary" size="small">登录</el-button>
-          </router-link>
-          <router-link to="/register">
-            <el-button size="small">注册</el-button>
-          </router-link>
-        </template>
+
+      <div class="navbar-links">
+        <router-link to="/blogs" class="navbar-link" :class="{ active: $route.path === '/blogs' }">
+          首页
+        </router-link>
+        <router-link to="/profile" class="navbar-link">
+          个人中心
+        </router-link>
+        <div class="navbar-divider"></div>
+        <div class="navbar-avatar" @click="$router.push('/profile')">
+          <UserAvatar :user="user" :size="34" />
+        </div>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-import { useAuth } from '@/composables/useAuth'
-import { ElMessage } from 'element-plus'
+import { useAuthStore } from '@/stores/auth'
+import UserAvatar from './UserAvatar.vue'
 
-const router = useRouter()
-const { isLoggedIn, user, logout } = useAuth()
-
-function handleLogout() {
-  logout()
-  ElMessage.success('已退出登录')
-  router.push('/login')
-}
+const authStore = useAuthStore()
+const user = authStore.user
 </script>
 
 <style scoped>
 .navbar {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #DDEEE5;
+  box-shadow: 0 1px 3px rgba(45,59,48,0.06);
 }
 
-.navbar-container {
-  max-width: 1200px;
-  height: 100%;
+.navbar-inner {
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
+  height: 64px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 16px;
 }
 
-.logo {
+.navbar-brand {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 20px;
-  font-weight: bold;
-  color: #409eff;
+  flex-shrink: 0;
 }
 
-.logo .el-icon {
-  font-size: 24px;
-}
-
-.nav-links {
+.navbar-brand-icon {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #5A9672 0%, #97C9A8 100%);
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
 }
 
-.username {
-  color: #666;
-  margin-right: 8px;
+.navbar-brand-icon svg { width: 18px; height: 18px; color: white; }
+
+.navbar-brand-text {
+  font-family: 'Lora', 'Noto Serif SC', Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #2D3B30;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.navbar-link {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B7D72;
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+.navbar-link:hover {
+  color: #2D3B30;
+  background: #E8F0EB;
+}
+
+.navbar-link.active {
+  color: #5A9672;
+  background: #E8F5ED;
+}
+
+.navbar-divider {
+  width: 1px;
+  height: 20px;
+  background: #C8DCD2;
+  margin: 0 8px;
+}
+
+.navbar-avatar {
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 150ms ease;
+}
+
+.navbar-avatar:hover {
+  transform: scale(1.05);
 }
 </style>

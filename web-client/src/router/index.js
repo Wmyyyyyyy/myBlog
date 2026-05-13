@@ -23,6 +23,11 @@ const routes = [
     name: 'BlogList',
     component: () => import('@/views/BlogList.vue'),
   },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/Profile.vue'),
+  },
 ]
 
 const router = createRouter({
