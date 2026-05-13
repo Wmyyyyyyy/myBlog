@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Node.js
+node_modules/
+.pnp/
+.pnp.js
+package-lock.json
+yarn.lock
+npm-debug.log*
+yarn-error.log*
+
+# Vue/Vite
+web-client/dist/
+web-client/.vite/
+.vite/
+
+# FastAPI / Uvicorn
+*.log
+
+# Docker
+.docker/
+
+# Environment (secrets)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test coverage
+coverage/
+*.cover
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# uvicorn
+.*.pid
+
+# Static files (user uploads - should be in a volume)
+uploads/
+static/
+
+#understand知识图谱
+.understand-anything/
+
+# Skills (local plugins)
+ui-ux-pro-max-skill/
+.claude/skills/*/
+!.claude/skills/ui-ux-pro-max/

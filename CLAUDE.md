@@ -134,3 +134,19 @@ npm run test:e2e        # E2E tests
 1. POST `/api/foundation/checkin` → increment streak
 2. Check achievements (7/30/100 day milestones)
 3. Celery Beat resets daily data at 4am
+
+## Development Guidelines
+
+- 修 Bug 后 grep 相似模式，防止遗漏
+- 后端修改后立即测试前端对应组件
+- 前端修改后立即测试后端对应组件
+
+## Auto-invoke Skills
+
+- 每次提交代码前自动调用 simplify skill 进行代码审查
+- 修改涉及多个文件时，优先使用 `/simplify` 检查代码复用性、质量和效率问题
+- 每次解决问题必须先调用相关的技能或者插件解决
+
+## Subagent Usage
+
+- 每次对话开始时，自动评估是否需要启动子代理（Agent 工具）来并行执行独立任务
