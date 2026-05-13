@@ -37,3 +37,7 @@ class RefreshRequest(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str

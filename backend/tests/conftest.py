@@ -54,3 +54,8 @@ def user_token():
 @pytest.fixture
 def user_refresh_token():
     return create_refresh_token("test-user-id")
+
+@pytest.fixture
+def faker_email():
+    import uuid
+    return f"test_{uuid.uuid4().hex[:8]}@example.com"
