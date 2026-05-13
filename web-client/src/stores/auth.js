@@ -5,6 +5,7 @@ import { authApi } from '@/api/auth'
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || '')
   const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
+  const isLoading = ref(false)
 
   const isLoggedIn = computed(() => !!token.value)
 
@@ -32,12 +33,15 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function fetchMe() {
-    if (!token.value) return
+    if (!token.value || isLoading.value) return
+    isLoading.value = true
     try {
       const response = await authApi.me()
       setUser(response.data.data)
     } catch (error) {
       logout()
+    } finally {
+      isLoading.value = false
     }
   }
 
