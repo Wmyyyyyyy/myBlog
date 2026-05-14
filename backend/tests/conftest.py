@@ -24,11 +24,11 @@ def pytest_configure(config):
     os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")
     os.environ.setdefault(
         "DATABASE_URL",
-        "postgresql+asyncpg://postgres:postgres@localhost:5432/blog_test",
+        "postgresql+asyncpg://postgres:qwe112233@localhost:5432/blog_test",
     )
     os.environ.setdefault(
         "DATABASE_URL_SYNC",
-        "postgresql://postgres:postgres@localhost:5432/blog_test",
+        "postgresql://postgres:qwe112233@localhost:5432/blog_test",
     )
     os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-for-testing-only")
     os.environ.setdefault("EMAIL_VERIFICATION_ENABLED", "false")
