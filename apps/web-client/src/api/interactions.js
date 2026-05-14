@@ -8,11 +8,11 @@ export const interactionApi = {
   removeFavorite(blogId) {
     return client.delete(`/api/interactions/favorites/${blogId}`)
   },
-  getMyFavorites(params) {
-    return client.get('/api/interactions/favorites/me', { params })
-  },
-  checkFavoriteStatus(blogId) {
+  getFavoriteStatus(blogId) {
     return client.get(`/api/interactions/favorites/${blogId}/status`)
+  },
+  getMyFavorites(params) {
+    return client.get('/api/interactions/favorites', { params })
   },
 
   // Likes
@@ -22,32 +22,24 @@ export const interactionApi = {
   removeLike(blogId) {
     return client.delete(`/api/interactions/likes/${blogId}`)
   },
-  checkLikeStatus(blogId) {
+  getLikeStatus(blogId) {
     return client.get(`/api/interactions/likes/${blogId}/status`)
   },
 
   // Follows
   follow(userId) {
-    return client.post(`/api/interactions/follow/${userId}`)
+    return client.post(`/api/interactions/follows/${userId}`)
   },
   unfollow(userId) {
-    return client.delete(`/api/interactions/follow/${userId}`)
+    return client.delete(`/api/interactions/follows/${userId}`)
   },
-  checkFollowStatus(userId) {
-    return client.get(`/api/interactions/follow/${userId}/status`)
+  getFollowStatus(userId) {
+    return client.get(`/api/interactions/follows/${userId}/status`)
   },
   getFollowers(userId, params) {
     return client.get(`/api/interactions/followers/${userId}`, { params })
   },
   getFollowing(userId, params) {
     return client.get(`/api/interactions/following/${userId}`, { params })
-  },
-
-  // Dynamics
-  getFeed(params) {
-    return client.get('/api/dynamics/feed', { params })
-  },
-  getUserEvents(userId, params) {
-    return client.get(`/api/dynamics/user/${userId}`, { params })
   },
 }
