@@ -1,9 +1,12 @@
 import json
 import asyncio
+import logging
 from typing import Optional
 import redis.asyncio as redis
 from core.config import settings
 from apps.websocket.manager import manager
+
+logger = logging.getLogger(__name__)
 
 CHANNEL = "dynamic_events"
 
@@ -35,8 +38,8 @@ class PubSubConsumer:
             try:
                 await self._pubsub.unsubscribe(CHANNEL)
                 await self._pubsub.close()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Error during shutdown: {e}")
         if self._redis:
             await self._redis.close()
             self._redis = None
@@ -53,21 +56,22 @@ class PubSubConsumer:
                     await self._handle_message(message["data"])
         except asyncio.CancelledError:
             pass
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"Error in pubsub listen: {e}")
         finally:
             if self._pubsub:
                 try:
                     await self._pubsub.unsubscribe(CHANNEL)
                     await self._pubsub.close()
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning(f"Error during shutdown: {e}")
 
     async def _handle_message(self, data: bytes):
         """处理动态事件消息"""
         try:
             msg = json.loads(data.decode())
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Failed to process message: {e}")
             return
 
         if msg.get("type") != "dynamic":
