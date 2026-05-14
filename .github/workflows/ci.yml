@@ -34,6 +34,9 @@ jobs:
         run: |
           cd backend
           pip install -r requirements.txt
+      - name: Create test database
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -c "CREATE DATABASE blog_test;" || true
       - name: Run tests
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/blog_test
