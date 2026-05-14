@@ -48,7 +48,7 @@ const routes = [
   {
     path: '/foundation',
     name: 'Foundation',
-    component: () => import('@/views/FoundationView.vue'),
+    component: () => import('@/views/Foundation.vue'),
     meta: { requiresAuth: true },
   },
   {

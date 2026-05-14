@@ -3,52 +3,46 @@ import { ref } from 'vue'
 import { foundationApi } from '@/api/foundation'
 
 export const useFoundationStore = defineStore('foundation', () => {
-  const todayStatus = ref({ checked_in: false, streak: 0 })
-  const history = ref({ dates: [], current_streak: 0, longest_streak: 0, total_checkins: 0 })
-  const achievements = ref([])
+  const status = ref({
+    today_checked_in: false,
+    current_streak: 0,
+    longest_streak: 0,
+    message: ''
+  })
+  const history = ref([])
+  const historyTotal = ref(0)
   const isLoading = ref(false)
 
   async function fetchStatus() {
-    const response = await foundationApi.getStatus()
-    todayStatus.value = response.data
-  }
-
-  async function fetchHistory() {
-    const response = await foundationApi.getHistory()
-    history.value = response.data
-  }
-
-  async function fetchAchievements() {
-    const response = await foundationApi.getAchievements()
-    achievements.value = response.data
+    const res = await foundationApi.getStatus()
+    status.value = res.data
   }
 
   async function checkIn() {
-    const response = await foundationApi.checkIn()
-    await fetchStatus()
+    const res = await foundationApi.checkIn()
+    status.value = res.data
     await fetchHistory()
-    await fetchAchievements()
-    return response.data
+    return res.data
   }
 
-  async function fetchAll() {
+  async function fetchHistory(params = {}) {
     isLoading.value = true
     try {
-      await Promise.all([fetchStatus(), fetchHistory(), fetchAchievements()])
+      const res = await foundationApi.getHistory(params)
+      history.value = res.data.records
+      historyTotal.value = res.data.total
     } finally {
       isLoading.value = false
     }
   }
 
   return {
-    todayStatus,
+    status,
     history,
-    achievements,
+    historyTotal,
     isLoading,
     fetchStatus,
-    fetchHistory,
-    fetchAchievements,
     checkIn,
-    fetchAll,
+    fetchHistory,
   }
 })

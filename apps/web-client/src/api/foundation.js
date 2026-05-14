@@ -9,8 +9,8 @@ export const foundationApi = {
     return client.get('/api/foundation/status')
   },
 
-  getHistory() {
-    return client.get('/api/foundation/history')
+  getHistory(params) {
+    return client.get('/api/foundation/history', { params })
   },
 
   getAchievements() {
