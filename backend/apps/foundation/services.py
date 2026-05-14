@@ -156,3 +156,106 @@ class FoundationService:
             "checked_in": checkin is not None,
             "streak": checkin.streak if checkin else 0,
         }
+
+    async def checkin(self, user_id: str) -> dict:
+        """每日打卡"""
+        today = date.today()
+        yesterday = today - timedelta(days=1)
+
+        # 检查今日是否已打卡
+        existing = await self.get_checkin_by_date(user_id, today)
+        if existing:
+            raise ValueError("今日已打卡")
+
+        # 创建打卡记录
+        checkin = CheckIn(user_id=user_id, check_in_date=today)
+        self.db.add(checkin)
+
+        # 更新用户连续天数
+        user = await self.get_user(user_id)
+        if not user:
+            raise ValueError("User not found")
+
+        if user.last_check_in_date == yesterday:
+            user.current_streak += 1
+        elif user.last_check_in_date == today:
+            pass
+        else:
+            user.current_streak = 1
+
+        user.last_check_in_date = today
+
+        if user.current_streak > user.longest_streak:
+            user.longest_streak = user.current_streak
+
+        await self.db.flush()
+
+        return {
+            "check_in_date": today,
+            "current_streak": user.current_streak,
+            "longest_streak": user.longest_streak,
+            "message": f"今日已打卡，您已连续 {user.current_streak} 天"
+        }
+
+    async def get_checkin_status(self, user_id: str) -> dict:
+        """获取打卡状态"""
+        today = date.today()
+        user = await self.get_user(user_id)
+        today_checked_in = await self.get_checkin_by_date(user_id, today)
+
+        return {
+            "today_checked_in": today_checked_in is not None,
+            "current_streak": user.current_streak if user else 0,
+            "longest_streak": user.longest_streak if user else 0,
+            "message": f"今日已打卡，您已连续 {user.current_streak} 天" if today_checked_in
+                       else "今日待打卡，开始您的筑基之旅"
+        }
+
+    async def get_checkin_history(self, user_id: str, skip: int = 0, limit: int = 20) -> tuple[list, int]:
+        """获取打卡历史"""
+        count_query = select(func.count(CheckIn.id)).where(CheckIn.user_id == user_id)
+        count_result = await self.db.execute(count_query)
+        total = count_result.scalar()
+
+        query = select(CheckIn).where(
+            CheckIn.user_id == user_id
+        ).order_by(CheckIn.check_in_date.desc()).offset(skip).limit(limit)
+
+        result = await self.db.execute(query)
+        records = list(result.scalars().all())
+
+        return records, total
+
+    async def get_checkin_by_date(self, user_id: str, check_date: date):
+        """检查某天是否打卡"""
+        query = select(CheckIn).where(
+            CheckIn.user_id == user_id,
+            CheckIn.check_in_date == check_date
+        )
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_user(self, user_id: str):
+        """获取用户"""
+        from apps.users.models import User
+        result = await self.db.execute(select(User).where(User.id == user_id))
+        return result.scalar_one_or_none()
+
+    async def reset_missed_checkins(self):
+        """重置漏打卡用户的连续天数"""
+        from apps.users.models import User
+        yesterday = date.today() - timedelta(days=1)
+
+        query = select(User).where(
+            User.last_check_in_date.isnot(None),
+            User.last_check_in_date < yesterday,
+            User.current_streak > 0
+        )
+        result = await self.db.execute(query)
+        users = result.scalars().all()
+
+        for user in users:
+            user.current_streak = 0
+
+        await self.db.flush()
+        return len(users)
