@@ -24,19 +24,9 @@
         </div>
       </div>
 
-      <div class="blog-actions-bar">
-        <button class="action-btn" :class="{ active: liked }" @click="handleLike">
-          <svg width="18" height="18" viewBox="0 0 24 24" :fill="liked ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-          <span>{{ likeCount }}</span>
-        </button>
-        <button class="action-btn" :class="{ active: favorited }" @click="handleFavorite">
-          <svg width="18" height="18" viewBox="0 0 24 24" :fill="favorited ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-          <span>收藏</span>
-        </button>
+      <div class="blog-actions">
+        <LikeButton :blog-id="blog.id" :initial-liked="liked" :initial-count="likeCount" />
+        <FavoriteButton :blog-id="blog.id" :initial-favorited="favorited" />
       </div>
 
       <article class="blog-article">
@@ -63,6 +53,8 @@ import { useBlogStore } from '@/stores/blogs'
 import { useAuthStore } from '@/stores/auth'
 import UserAvatar from '@/components/UserAvatar.vue'
 import CommentSection from '@/components/CommentSection.vue'
+import LikeButton from '@/components/LikeButton.vue'
+import FavoriteButton from '@/components/FavoriteButton.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -212,28 +204,11 @@ function formatDate(dateStr) {
 .author-name { font-size: 15px; font-weight: 600; color: #2D3B30; }
 .author-date { font-size: 13px; color: #6B7D72; }
 
-.blog-actions-bar {
+.blog-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #E8F0EB;
+  gap: 16px;
+  margin-top: 16px;
 }
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 100px;
-  border: 1.5px solid #C8DCD2;
-  background: #FFFFFF;
-  color: #6B7D72;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-.action-btn:hover { border-color: #5A9672; color: #5A9672; }
-.action-btn.active { background: #E8F5ED; border-color: #5A9672; color: #5A9672; }
 
 .blog-comments { margin-top: 48px; }
 </style>

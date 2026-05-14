@@ -7,6 +7,9 @@
         </div>
         <h1 class="profile-username">{{ user?.username || '未登录' }}</h1>
         <p class="profile-bio">{{ user?.bio || '这个人很懒，什么都没写' }}</p>
+        <div v-if="isOtherUser" class="profile-follow">
+          <FollowButton :user-id="userId" />
+        </div>
       </div>
 
       <div class="profile-tabs">
@@ -20,6 +23,11 @@
           :class="{ active: activeTab === 'articles' }"
           @click="activeTab = 'articles'"
         >我的文章</button>
+        <button
+          class="profile-tab"
+          :class="{ active: activeTab === 'dynamics' }"
+          @click="activeTab = 'dynamics'"
+        >动态</button>
       </div>
 
       <div v-show="activeTab === 'info'" class="profile-info">
@@ -35,7 +43,6 @@
           <span class="info-label">用户ID</span>
           <span class="info-value info-value-mono">{{ user?.id || '-' }}</span>
         </div>
-      </div>
       </div>
 
       <div v-show="activeTab === 'articles'" class="articles-section">
@@ -60,6 +67,10 @@
         </div>
       </div>
 
+      <div v-show="activeTab === 'dynamics'" class="dynamics-section">
+        <DynamicFeed v-if="showDynamics" />
+      </div>
+
       <div v-show="activeTab === 'info'" class="profile-actions">
         <button class="btn btn-outline" @click="handleLogout">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -81,6 +92,8 @@ import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useBlogStore } from '@/stores/blogs'
 import UserAvatar from '@/components/UserAvatar.vue'
+import FollowButton from '@/components/FollowButton.vue'
+import DynamicFeed from '@/components/DynamicFeed.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -88,6 +101,9 @@ const blogStore = useBlogStore()
 
 const user = computed(() => authStore.user)
 const activeTab = ref('info')
+const showDynamics = ref(false)
+const userId = computed(() => authStore.user?.id)
+const isOtherUser = computed(() => false)
 const myArticles = computed(() =>
   blogStore.blogs.filter(b => b.author_id === user.value?.id)
 )
@@ -156,6 +172,14 @@ function handleLogout() {
   font-size: 14px;
   color: #6B7D72;
   line-height: 1.6;
+}
+
+.profile-follow {
+  margin-top: 16px;
+}
+
+.dynamics-section {
+  padding: 24px 32px 32px;
 }
 
 .profile-info {
