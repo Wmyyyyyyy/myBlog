@@ -9,7 +9,7 @@ from apps.admin.schemas import (
     AdminLogin, AdminToken, AdminUserInfo,
     DashboardStats, UserGrowthItem, BlogGrowthItem, DailyActiveItem, InteractionStatsItem,
     UserItem, UserListItem, BanUserRequest, UnbanUserRequest, UpdateUserRequest, ResetPasswordRequest, ResetPasswordResponse,
-    SensitiveWordItem, CreateSensitiveWord, UpdateSensitiveWord,
+    SensitiveWordItem, SensitiveWordCreate, SensitiveWordUpdate,
     WarnedBlogItem, WarnedCommentItem, ReviewAction,
     AdminLogItem,
     LoginLogItem, IPBanItem, IPBanCreate,
@@ -334,7 +334,7 @@ async def list_sensitive_words(
 
 @router.post("/sensitive-words", status_code=status.HTTP_201_CREATED)
 async def create_sensitive_word(
-    data: CreateSensitiveWord,
+    data: SensitiveWordCreate,
     db: AsyncSession = Depends(get_db),
     current_admin: User = Depends(get_current_admin),
 ):
@@ -346,7 +346,7 @@ async def create_sensitive_word(
 @router.put("/sensitive-words/{word_id}")
 async def update_sensitive_word(
     word_id: str,
-    data: UpdateSensitiveWord,
+    data: SensitiveWordUpdate,
     db: AsyncSession = Depends(get_db),
     current_admin: User = Depends(get_current_admin),
 ):
@@ -769,7 +769,7 @@ async def list_ip_bans(
 
 @router.post("/security/ip-bans", status_code=status.HTTP_201_CREATED)
 async def create_ip_ban(
-    data: CreateIPBan,
+    data: IPBanCreate,
     db: AsyncSession = Depends(get_db),
     current_admin: User = Depends(get_current_admin),
 ):

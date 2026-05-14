@@ -56,6 +56,26 @@ class DashboardStats(BaseModel):
     today_checkin_count: int
 
 
+class UserGrowthItem(BaseModel):
+    date: str
+    count: int
+
+
+class BlogGrowthItem(BaseModel):
+    date: str
+    count: int
+
+
+class DailyActiveItem(BaseModel):
+    date: str
+    count: int
+
+
+class InteractionStatsItem(BaseModel):
+    type: str
+    count: int
+
+
 # ==================== User Management ====================
 
 class UserListItem(BaseModel):
@@ -326,6 +346,26 @@ class LoginLogResponse(BaseModel):
     total: int
     page: int
     page_size: int
+
+
+# ==================== Admin Logs ====================
+
+class AdminLogItem(BaseModel):
+    id: str
+    admin_id: str
+    action: str
+    target_type: Optional[str] = None
+    target_id: Optional[str] = None
+    detail: Optional[str] = None
+    ip_address: Optional[str] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class AdminLogResponse(BaseModel):
+    items: list[AdminLogItem]
+    total: int
 
 
 # ==================== Content Review ====================

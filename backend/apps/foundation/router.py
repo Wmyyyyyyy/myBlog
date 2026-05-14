@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
 from core.dependencies import get_current_user
 from apps.users.models import User
-from apps.foundation.schemas import CheckInResponse, CheckInStatus, CheckInHistory, MessageResponse
+from apps.foundation.schemas import CheckInResponse, CheckInStatus, CheckInHistory
 from apps.foundation.services import FoundationService
 
 router = APIRouter(prefix="/api/foundation", tags=["百日筑基"])
