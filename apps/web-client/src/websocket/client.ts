@@ -50,6 +50,10 @@ export function createWsClient(options: WsClientOptions): WsClient {
   }
 
   function connect(newToken: string) {
+    if (retryTimer) {
+      clearTimeout(retryTimer)
+      retryTimer = null
+    }
     token = newToken
     destroyed = false
     retryCount = 0
