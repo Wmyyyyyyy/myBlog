@@ -14,11 +14,18 @@ class CheckInResponse(BaseModel):
 
 
 class CheckInHistory(BaseModel):
-    """用户的打卡历史（用于日历展示）"""
-    dates: list[date]
+    """用户的打卡历史（分页）"""
+    records: list[dict]
+    total: int
+
+
+class CheckInStatus(BaseModel):
+    """今日打卡状态"""
+    checked_in: bool
     current_streak: int
     longest_streak: int
     total_checkins: int
+    check_in_date: Optional[date] = None
 
 
 class AchievementOut(BaseModel):
