@@ -1,3 +1,4 @@
+import uuid as uuid_lib
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
@@ -60,6 +61,11 @@ async def get_blog(
     blog_id: str,
     db: AsyncSession = Depends(get_db),
 ):
+    try:
+        uuid_lib.UUID(blog_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid blog ID format")
+
     service = BlogService(db)
     blog = await service.get_blog_by_id(blog_id)
     if not blog:

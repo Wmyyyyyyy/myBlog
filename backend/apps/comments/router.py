@@ -1,3 +1,4 @@
+import uuid as uuid_lib
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
@@ -47,6 +48,11 @@ async def get_blog_comments(
     sort: str = Query("latest", regex="^(latest|hottest)$"),
     db: AsyncSession = Depends(get_db),
 ):
+    try:
+        uuid_lib.UUID(blog_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid blog ID format")
+
     service = CommentService(db)
     comments = await service.get_comments_by_blog(blog_id, skip, limit, sort)
     return [
@@ -76,6 +82,11 @@ async def get_comment_replies(
     limit: int = Query(10, ge=1, le=50),
     db: AsyncSession = Depends(get_db),
 ):
+    try:
+        uuid_lib.UUID(comment_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid comment ID format")
+
     service = CommentService(db)
     replies = await service.get_replies(comment_id, skip, limit)
     return [

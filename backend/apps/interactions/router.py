@@ -1,3 +1,4 @@
+import uuid as uuid_lib
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
@@ -162,6 +163,11 @@ async def get_user_followers(
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
 ):
+    try:
+        uuid_lib.UUID(user_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user ID format")
+
     service = InteractionService(db)
     return await service.get_followers(user_id, skip, limit)
 
@@ -173,5 +179,10 @@ async def get_user_following(
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
 ):
+    try:
+        uuid_lib.UUID(user_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user ID format")
+
     service = InteractionService(db)
     return await service.get_following(user_id, skip, limit)

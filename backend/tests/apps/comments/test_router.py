@@ -15,14 +15,14 @@ class TestCommentAPI:
 
     async def test_get_blog_comments_empty(self, client: AsyncClient):
         """Test getting comments for a blog with no comments."""
-        response = await client.get("/api/comments/blog/nonexistent-blog")
+        response = await client.get("/api/comments/blog/00000000-0000-0000-0000-000000000001")
         assert response.status_code == 200
         assert response.json() == []
 
     async def test_get_blog_comments_with_pagination(self, client: AsyncClient):
         """Test getting blog comments with pagination parameters."""
         response = await client.get(
-            "/api/comments/blog/test-blog?skip=0&limit=10&sort=latest"
+            "/api/comments/blog/00000000-0000-0000-0000-000000000002?skip=0&limit=10&sort=latest"
         )
         assert response.status_code == 200
 
@@ -34,7 +34,7 @@ class TestCommentAPI:
     async def test_get_replies_pagination(self, client: AsyncClient):
         """Test getting comment replies with pagination."""
         response = await client.get(
-            "/api/comments/some-comment-id/replies?skip=0&limit=10"
+            "/api/comments/00000000-0000-0000-0000-000000000003/replies?skip=0&limit=10"
         )
         assert response.status_code == 200
         assert isinstance(response.json(), list)

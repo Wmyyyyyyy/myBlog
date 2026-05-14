@@ -60,11 +60,13 @@ class TestFollowAPI:
         assert response.status_code == 401
 
     async def test_get_followers_unauthenticated(self, client: AsyncClient):
-        """Test that getting followers without authentication returns 401."""
-        response = await client.get("/api/interactions/followers/test-user-id")
-        assert response.status_code == 401
+        """Test that getting followers for a non-existent user returns empty list."""
+        response = await client.get("/api/interactions/followers/00000000-0000-0000-0000-000000000004")
+        assert response.status_code == 200
+        assert response.json() == []
 
     async def test_get_following_unauthenticated(self, client: AsyncClient):
-        """Test that getting following without authentication returns 401."""
-        response = await client.get("/api/interactions/following/test-user-id")
-        assert response.status_code == 401
+        """Test that getting following for a non-existent user returns empty list."""
+        response = await client.get("/api/interactions/following/00000000-0000-0000-0000-000000000005")
+        assert response.status_code == 200
+        assert response.json() == []

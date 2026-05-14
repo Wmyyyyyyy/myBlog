@@ -73,7 +73,7 @@ class TestBlogAPI:
 
     async def test_get_blog_not_found(self, client: AsyncClient):
         """Test getting a non-existent blog returns 404."""
-        response = await client.get("/api/blogs/non-existent-id")
+        response = await client.get("/api/blogs/00000000-0000-0000-0000-000000000001")
         assert response.status_code == 404
 
     async def test_update_blog(self, client: AsyncClient, faker_email):
