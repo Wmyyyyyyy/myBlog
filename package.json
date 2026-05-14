@@ -1,0 +1,24 @@
+{
+  "name": "myblog",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "pnpm --filter web-client dev",
+    "dev:admin": "pnpm --filter admin-client dev",
+    "build:web": "pnpm --filter web-client build",
+    "build:admin": "pnpm --filter admin-client build",
+    "generate:types": "openapi-typescript http://localhost:8000/openapi.json -o packages/shared-types/src/index.ts",
+    "typecheck": "pnpm -r --parallel exec tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@myblog/api-client": "workspace:*",
+    "@myblog/shared-types": "workspace:*"
+  }
+}

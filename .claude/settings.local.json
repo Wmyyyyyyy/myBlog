@@ -3,10 +3,22 @@
     "allow": [
       "Bash(E:/code/myBlog/backend/.venv/Scripts/python.exe *)",
       "Bash(E:/code/myBlog/backend/.venv/Scripts/pip.exe *)",
-      "Bash(PYTHONPATH=E:/code/myBlog/backend *)",
+      "Bash(PYTHONPATH=E:/code/myBlog/backend E:/code/myBlog/backend/.venv/Scripts/python.exe *)",
       "Bash(mkdir -p \"E:/code/myBlog/.understand-anything/intermediate\")",
       "Bash(mkdir -p \"E:/code/myBlog/.understand-anything/tmp\")",
-      "Bash(npx skills *)"
+      "Bash(npx skills *)",
+      "Bash(node -e *)",
+      "Bash(node .understand-anything/tmp/build-import-map.js)",
+      "Bash(node *)",
+      "Bash(cd E:/code/myBlog/backend && E:/code/myBlog/backend/.venv/Scripts/python.exe -m pytest *)",
+      "Bash(cd E:/code/myBlog/web-client && npm *)",
+      "Bash(cd E:/code/myBlog/admin-client && npm *)",
+      "Bash(E:/code/myBlog/backend/.venv/Scripts/uvicorn *)",
+      "Bash(E:/code/myBlog/backend/.venv/Scripts/celery *)",
+      "Bash(E:/code/myBlog/backend/.venv/Scripts/ruff check *)",
+      "Bash(E:/code/myBlog/backend/.venv/Scripts/mypy *)",
+      "Bash(cd E:/code/myBlog && git *)",
+      "Bash(cd E:/code/myBlog/backend && git *)"
     ]
   }
 }

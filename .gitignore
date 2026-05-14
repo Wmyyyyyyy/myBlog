@@ -74,3 +74,8 @@ ui-ux-pro-max-skill/
 .claude/*/
 !.claude/skills/ui-ux-pro-max/
 .gstack/
+
+# Planning session files (Manus-style)
+task_plan.md
+findings.md
+progress.md
