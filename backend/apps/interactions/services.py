@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
 from apps.interactions.models import Favorite, Like, Follow
+from apps.blogs.models import Blog
 
 
 class InteractionService:
@@ -61,6 +62,17 @@ class InteractionService:
     async def is_favorited(self, user_id: str, blog_id: str) -> bool:
         return await self.get_favorite(user_id, blog_id) is not None
 
+    async def get_favorites_count(self, blog_id: str) -> int:
+        """获取博客的收藏数"""
+        result = await self.db.execute(
+            select(func.count()).select_from(Favorite).where(Favorite.blog_id == blog_id)
+        )
+        return result.scalar() or 0
+
+    async def check_favorite_status(self, user_id: str, blog_id: str) -> bool:
+        """检查是否已收藏"""
+        return await self.is_favorited(user_id, blog_id)
+
     # ==================== Likes ====================
 
     async def add_like(self, user_id: str, blog_id: str) -> Like:
@@ -69,10 +81,27 @@ class InteractionService:
         if existing:
             return existing
 
+        # Get blog author for dynamics recording
+        blog_result = await self.db.execute(
+            select(Blog).where(Blog.id == blog_id)
+        )
+        blog = blog_result.scalar_one_or_none()
+
         like = Like(user_id=user_id, blog_id=blog_id)
         self.db.add(like)
         await self.db.flush()
         await self.db.refresh(like)
+
+        # Write to dynamics
+        if blog:
+            from apps.dynamics.services import DynamicService
+            dynamic_service = DynamicService(self.db)
+            await dynamic_service.record_like_blog(
+                user_id=user_id,
+                blog_id=blog_id,
+                blog_author_id=blog.author_id
+            )
+
         return like
 
     async def remove_like(self, user_id: str, blog_id: str) -> bool:
@@ -111,6 +140,10 @@ class InteractionService:
     async def is_liked(self, user_id: str, blog_id: str) -> bool:
         return await self.get_like(user_id, blog_id) is not None
 
+    async def check_like_status(self, user_id: str, blog_id: str) -> bool:
+        """检查是否已点赞"""
+        return await self.is_liked(user_id, blog_id)
+
     async def get_likes_count(self, blog_id: str) -> int:
         """获取博客的点赞数"""
         result = await self.db.execute(
@@ -133,6 +166,15 @@ class InteractionService:
         self.db.add(follow)
         await self.db.flush()
         await self.db.refresh(follow)
+
+        # Write to dynamics
+        from apps.dynamics.services import DynamicService
+        dynamic_service = DynamicService(self.db)
+        await dynamic_service.record_follow(
+            follower_id=follower_id,
+            following_id=following_id
+        )
+
         return follow
 
     async def unfollow(self, follower_id: str, following_id: str) -> bool:
@@ -161,6 +203,10 @@ class InteractionService:
 
     async def is_following(self, follower_id: str, following_id: str) -> bool:
         return await self.get_follow(follower_id, following_id) is not None
+
+    async def check_follow_status(self, follower_id: str, following_id: str) -> bool:
+        """检查是否已关注"""
+        return await self.is_following(follower_id, following_id)
 
     async def get_followers(self, user_id: str, skip: int = 0, limit: int = 20):
         """获取用户的粉丝列表"""

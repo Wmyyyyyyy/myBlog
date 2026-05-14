@@ -5,7 +5,7 @@ from typing import Optional
 from core.database import get_db
 from core.dependencies import get_current_user
 from apps.users.models import User
-from apps.interactions.schemas import FavoriteResponse, LikeResponse, FollowResponse, MessageResponse
+from apps.interactions.schemas import FavoriteOut, LikeOut, FollowOut, MessageResponse
 from apps.interactions.services import InteractionService
 
 router = APIRouter(prefix="/api/interactions", tags=["互动"])
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/interactions", tags=["互动"])
 
 # ==================== Favorites ====================
 
-@router.post("/favorites/{blog_id}", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/favorites/{blog_id}", response_model=FavoriteOut, status_code=status.HTTP_201_CREATED)
 async def add_favorite(
     blog_id: str,
     db: AsyncSession = Depends(get_db),
@@ -35,7 +35,7 @@ async def remove_favorite(
     return MessageResponse(message="Removed from favorites")
 
 
-@router.get("/favorites/me", response_model=list[FavoriteResponse])
+@router.get("/favorites", response_model=list[FavoriteOut])
 async def get_my_favorites(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
@@ -54,12 +54,13 @@ async def check_favorite_status(
 ):
     service = InteractionService(db)
     is_fav = await service.is_favorited(current_user.id, blog_id)
-    return {"is_favorited": is_fav}
+    count = await service.get_favorites_count(blog_id)
+    return {"is_favorited": is_fav, "favorite_count": count}
 
 
 # ==================== Likes ====================
 
-@router.post("/likes/{blog_id}", response_model=LikeResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/likes/{blog_id}", response_model=LikeOut, status_code=status.HTTP_201_CREATED)
 async def add_like(
     blog_id: str,
     db: AsyncSession = Depends(get_db),
@@ -106,7 +107,7 @@ async def check_like_status(
 
 # ==================== Follows ====================
 
-@router.post("/follow/{user_id}", response_model=FollowResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/follows/{user_id}", response_model=FollowOut, status_code=status.HTTP_201_CREATED)
 async def follow_user(
     user_id: str,
     db: AsyncSession = Depends(get_db),
@@ -126,7 +127,7 @@ async def follow_user(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.delete("/follow/{user_id}", response_model=MessageResponse)
+@router.delete("/follows/{user_id}", response_model=MessageResponse)
 async def unfollow_user(
     user_id: str,
     db: AsyncSession = Depends(get_db),
@@ -137,7 +138,7 @@ async def unfollow_user(
     return MessageResponse(message="Unfollowed successfully")
 
 
-@router.get("/follow/{user_id}/status", response_model=dict)
+@router.get("/follows/{user_id}/status", response_model=dict)
 async def check_follow_status(
     user_id: str,
     db: AsyncSession = Depends(get_db),
@@ -154,7 +155,7 @@ async def check_follow_status(
     }
 
 
-@router.get("/followers/{user_id}", response_model=list[FollowResponse])
+@router.get("/followers/{user_id}", response_model=list[FollowOut])
 async def get_user_followers(
     user_id: str,
     skip: int = Query(0, ge=0),
@@ -165,7 +166,7 @@ async def get_user_followers(
     return await service.get_followers(user_id, skip, limit)
 
 
-@router.get("/following/{user_id}", response_model=list[FollowResponse])
+@router.get("/following/{user_id}", response_model=list[FollowOut])
 async def get_user_following(
     user_id: str,
     skip: int = Query(0, ge=0),
