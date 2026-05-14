@@ -58,13 +58,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: web-client/package-lock.json
+          cache: 'pnpm'
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install dependencies
-        run: |
-          cd web-client
-          npm ci
-      - name: Build
-        run: |
-          cd web-client
-          npm run build
+        run: pnpm install
+      - name: Build web-client
+        run: pnpm --filter web-client build
+      - name: Build admin-client
+        run: pnpm --filter admin-client build
