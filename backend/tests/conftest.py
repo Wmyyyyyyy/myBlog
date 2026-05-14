@@ -34,38 +34,23 @@ def pytest_configure(config):
     os.environ.setdefault("EMAIL_VERIFICATION_ENABLED", "false")
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    import asyncio
-    policy = asyncio.get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="session")
-def test_engine():
-    from sqlalchemy.ext.asyncio import create_async_engine
+@pytest.fixture(scope="function")
+async def db_session():
+    from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+    from core.database import Base
 
     TEST_DATABASE_URL = os.environ.get(
         "DATABASE_URL",
-        "postgresql+asyncpg://postgres:postgres@localhost:5432/blog_test",
+        "postgresql+asyncpg://postgres:qwe112233@localhost:5432/blog_test",
     )
 
-    engine = create_async_engine(
+    test_engine = create_async_engine(
         TEST_DATABASE_URL,
         echo=False,
         pool_pre_ping=True,
         pool_size=5,
         max_overflow=10,
     )
-    return engine
-
-
-@pytest.fixture(scope="function")
-async def db_session(test_engine):
-    from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
-    from core.database import Base
 
     TestingSessionLocal = async_sessionmaker(
         bind=test_engine,
@@ -83,6 +68,8 @@ async def db_session(test_engine):
 
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
+    await test_engine.dispose()
 
 
 @pytest.fixture(scope="function")
