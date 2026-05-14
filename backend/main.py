@@ -13,6 +13,7 @@ from apps.comments.router import router as comments_router
 from apps.interactions.router import router as interactions_router
 from apps.dynamics.router import router as dynamics_router
 from apps.admin.router import router as admin_router
+from apps.websocket.router import router as websocket_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -47,6 +48,7 @@ app.include_router(comments_router)
 app.include_router(interactions_router)
 app.include_router(dynamics_router)
 app.include_router(admin_router)
+app.include_router(websocket_router, prefix="/api")
 
 @app.get("/health")
 async def health():
