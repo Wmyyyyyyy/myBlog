@@ -14,10 +14,13 @@ from apps.interactions.router import router as interactions_router
 from apps.dynamics.router import router as dynamics_router
 from apps.admin.router import router as admin_router
 from apps.websocket.router import router as websocket_router
+from apps.websocket.consumer import consumer
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await consumer.start()
     yield
+    await consumer.stop()
     await close_redis()
 
 app = FastAPI(
