@@ -2,7 +2,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
-from core.redis import close_redis
+from core.redis import close_redis, redis_client
+from core.rate_limit import RateLimitMiddleware
 from apps.users.views import router as users_router
 from apps.blogs.router import router as blogs_router
 from apps.foundation.router import router as foundation_router
@@ -31,6 +32,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(RateLimitMiddleware, redis=redis_client)
 app.include_router(users_router)
 app.include_router(blogs_router)
 app.include_router(foundation_router)
