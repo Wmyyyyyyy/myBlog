@@ -110,31 +110,7 @@ async function handleSubmit() {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--color-background, #F2F9F4);
-  position: relative;
-  overflow: hidden;
-}
-
-.auth-page::before {
-  content: '';
-  position: absolute;
-  top: -200px;
-  right: -200px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(90,150,114,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.auth-page::after {
-  content: '';
-  position: absolute;
-  bottom: -150px;
-  left: -150px;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(151,201,168,0.10) 0%, transparent 70%);
-  pointer-events: none;
+  background: transparent;
 }
 
 .auth-card {

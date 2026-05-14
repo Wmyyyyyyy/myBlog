@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM ccr.ccs.tencentyun.com/blog_b/python:3.11-slim
 
 WORKDIR /app
 

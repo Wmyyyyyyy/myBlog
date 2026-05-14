@@ -1,5 +1,6 @@
 import pytest
-from apps.blogs.models import Blog, Comment
+from apps.blogs.models import Blog
+from apps.comments.models import Comment
 
 
 class TestBlogModel:

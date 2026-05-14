@@ -1,14 +1,11 @@
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from passlib.context import CryptContext
 
 from apps.users.models import User
 from apps.users.schemas import UserCreate
 from core.security import verify_password, get_password_hash
 from core.exceptions import UserAlreadyExists, InvalidCredentials, EmailNotVerified
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class AuthService:
     def __init__(self, db: AsyncSession):

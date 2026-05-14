@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 from apps.blogs.services import BlogService
 from apps.blogs.schemas import BlogCreate
+from core.moderation import ModerationResult
 
 
 class TestBlogService:
@@ -9,9 +10,12 @@ class TestBlogService:
         """Test that blog creation succeeds when moderation passes."""
         mock_db = AsyncMock()
         mock_filter_instance = MagicMock()
-        mock_filter_instance.check.return_value = MagicMock(
-            passed=True, action="pass", moderated_text=None, flagged_words=[]
+        # Create a proper ModerationResult with block=False
+        moderation_result = ModerationResult(
+            passed=True, action="pass", original_text="test",
+            moderated_text=None, flagged_words=[]
         )
+        mock_filter_instance.check.return_value = moderation_result
 
         with patch('apps.blogs.services.get_filter', return_value=mock_filter_instance):
             service = BlogService(mock_db)
@@ -34,9 +38,11 @@ class TestBlogService:
         """Test that blog is rejected when moderation returns block."""
         mock_db = AsyncMock()
         mock_filter_instance = MagicMock()
-        mock_filter_instance.check.return_value = MagicMock(
-            passed=False, action="block", moderated_text=None, flagged_words=["badword"]
+        moderation_result = ModerationResult(
+            passed=False, action="block", original_text="test",
+            moderated_text=None, flagged_words=["badword"]
         )
+        mock_filter_instance.check.return_value = moderation_result
 
         with patch('apps.blogs.services.get_filter', return_value=mock_filter_instance):
             service = BlogService(mock_db)
@@ -54,9 +60,11 @@ class TestBlogService:
         """Test that blog content is replaced when moderation returns replace."""
         mock_db = AsyncMock()
         mock_filter_instance = MagicMock()
-        mock_filter_instance.check.return_value = MagicMock(
-            passed=True, action="replace", moderated_text="Test **** content", flagged_words=["bad"]
+        moderation_result = ModerationResult(
+            passed=True, action="replace", original_text="Test This contains bad content",
+            moderated_text="Test This contains **** content", flagged_words=["bad"]
         )
+        mock_filter_instance.check.return_value = moderation_result
 
         with patch('apps.blogs.services.get_filter', return_value=mock_filter_instance):
             service = BlogService(mock_db)

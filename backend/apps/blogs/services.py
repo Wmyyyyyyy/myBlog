@@ -1,8 +1,11 @@
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from typing import Optional
 
-from apps.blogs.models import Blog, Comment
+from apps.blogs.models import Blog
+from apps.comments.models import Comment
+from apps.users.models import User
 from apps.blogs.schemas import BlogCreate, BlogUpdate
 from core.moderation import DFAFilter, ModerationAction, get_filter, ModerationResult
 
@@ -46,6 +49,12 @@ class BlogService:
         self.db.add(blog)
         await self.db.flush()
         await self.db.refresh(blog)
+
+        # Record dynamic event
+        from apps.dynamics.services import DynamicService
+        dynamic_service = DynamicService(self.db)
+        await dynamic_service.record_blog_post(blog)
+
         return blog
 
     async def get_blog_by_id(self, blog_id: str) -> Optional[Blog]:
@@ -60,13 +69,18 @@ class BlogService:
         limit: int = 20,
         category: Optional[str] = None,
         status: str = "published",
-    ) -> list[Blog]:
-        query = select(Blog).where(Blog.is_deleted == False, Blog.status == status)
+    ) -> list[tuple[Blog, str]]:
+        """Returns list of (Blog, author_username) tuples."""
+        query = (
+            select(Blog, User.username)
+            .join(User, Blog.author_id == User.id)
+            .where(Blog.is_deleted == False, Blog.status == status)
+        )
         if category:
             query = query.where(Blog.category == category)
         query = query.order_by(Blog.created_at.desc()).offset(skip).limit(limit)
         result = await self.db.execute(query)
-        return list(result.scalars().all())
+        return list(result.all())
 
     async def update_blog(self, blog_id: str, blog_data: BlogUpdate, author_id: str) -> Optional[Blog]:
         blog = await self.get_blog_by_id(blog_id)

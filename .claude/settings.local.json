@@ -1,38 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ln *)",
-      "Bash(git init *)",
-      "Bash(git add *)",
-      "Bash(git commit *)",
-      "Bash(python3 *)",
-      "Bash(python *)",
-      "Bash(dir *)",
-      "Bash(npm search *)",
-      "Bash(/c/Users/dadada/.claude/skills/bin/gstack-update-check --help)",
-      "Bash(curl -s \"https://api.github.com/repos/jeffallan/claude-skills/contents\")",
-      "WebFetch(domain:skills.sh)",
-      "Bash(npm list *)",
-      "WebFetch(domain:www.skills.sh)",
-      "WebSearch",
-      "Bash(git config *)",
-      "Bash(git clone *)",
-      "Bash(D:/Python/Python310/python.exe *)",
-      "Skill(browse)",
-      "Bash(pg_isready -h localhost -p 5432)",
-      "Bash(E:/code/myBlog/backend/.venv/Scripts/python.exe -m pytest tests/apps/users/test_views.py -v)",
-      "Bash(E:/code/myBlog/backend/.venv/Scripts/pip.exe install *)",
-      "Bash(set PYTHONPATH=E:/code/myBlog/backend)",
-      "Bash(E:/code/myBlog/backend/.venv/Scripts/python.exe -c \"import sys; print\\(sys.path\\); from apps.users.views import router; print\\('OK'\\)\")",
-      "Bash(E:/code/myBlog/backend/.venv/Scripts/python.exe -m pytest tests/apps/users/test_views.py -v --tb=short)",
-      "Bash(set PYTHONPATH=E:\\\\code\\\\myBlog\\\\backend)",
-      "Bash(E:\\\\code\\\\myBlog\\\\backend\\\\.venv\\\\Scripts\\\\python.exe -m pytest tests/apps/users/test_views.py -v --tb=short)",
-      "Bash(PYTHONPATH=E:/code/myBlog/backend E:/code/myBlog/backend/.venv/Scripts/python.exe -m pytest tests/apps/users/test_views.py -v --tb=short)",
-      "Bash(xxd)",
-      "Bash(E:/code/myBlog/backend/.venv/Scripts/python.exe -c ' *)",
-      "Bash(PYTHONPATH=\"E:/code/myBlog/backend\" E:/code/myBlog/backend/.venv/Scripts/python.exe -m pytest tests/apps/users/test_views.py -v)",
-      "Bash(.venv/Scripts/python -c ' *)",
-      "Bash(.venv/Scripts/python -m pytest --co -q)"
+      "Bash(E:/code/myBlog/backend/.venv/Scripts/python.exe *)",
+      "Bash(E:/code/myBlog/backend/.venv/Scripts/pip.exe *)",
+      "Bash(PYTHONPATH=E:/code/myBlog/backend *)"
     ]
   }
 }

@@ -11,8 +11,14 @@ _backend_dir = Path(__file__).resolve().parent.parent
 def pytest_configure(config):
     """Add backend directory to sys.path before test collection."""
     backend_path = str(_backend_dir)
-    if backend_path not in sys.path:
-        sys.path.insert(0, backend_path)
+    tests_path = str(_backend_dir / "tests")
+    # Remove tests directory from sys.path to avoid shadowing the real apps module
+    if tests_path in sys.path:
+        sys.path.remove(tests_path)
+    # Ensure backend is at position 0
+    if backend_path in sys.path:
+        sys.path.remove(backend_path)
+    sys.path.insert(0, backend_path)
 
     # Set test environment variables
     os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")

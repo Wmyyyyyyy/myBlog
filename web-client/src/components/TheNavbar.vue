@@ -16,13 +16,22 @@
         <router-link to="/blogs" class="navbar-link" :class="{ active: $route.path === '/blogs' }">
           首页
         </router-link>
-        <router-link to="/profile" class="navbar-link">
-          个人中心
+        <router-link to="/blogs" class="navbar-link" :class="{ active: false }">
+          博客
+        </router-link>
+        <router-link to="/foundation" class="navbar-link">
+          百日筑基
+        </router-link>
+        <router-link to="/dynamics" class="navbar-link">
+          动态
         </router-link>
         <div class="navbar-divider"></div>
-        <div class="navbar-avatar" @click="$router.push('/profile')">
+        <div v-if="authStore.isAuthenticated" class="navbar-avatar" @click="$router.push('/profile')">
           <UserAvatar :user="user" :size="34" />
         </div>
+        <router-link v-else to="/login" class="navbar-link login-link">
+          登录
+        </router-link>
       </div>
     </div>
   </nav>
@@ -126,5 +135,16 @@ const user = authStore.user
 
 .navbar-avatar:hover {
   transform: scale(1.05);
+}
+
+.login-link {
+  padding: 8px 16px;
+  background: #5A9672;
+  color: #FFFFFF !important;
+  font-weight: 600;
+}
+
+.login-link:hover {
+  background: #4A8562;
 }
 </style>

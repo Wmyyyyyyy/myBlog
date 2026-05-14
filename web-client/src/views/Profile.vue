@@ -9,7 +9,20 @@
         <p class="profile-bio">{{ user?.bio || '这个人很懒，什么都没写' }}</p>
       </div>
 
-      <div class="profile-info">
+      <div class="profile-tabs">
+        <button
+          class="profile-tab"
+          :class="{ active: activeTab === 'info' }"
+          @click="activeTab = 'info'"
+        >个人信息</button>
+        <button
+          class="profile-tab"
+          :class="{ active: activeTab === 'articles' }"
+          @click="activeTab = 'articles'"
+        >我的文章</button>
+      </div>
+
+      <div v-show="activeTab === 'info'" class="profile-info">
         <div class="info-item">
           <span class="info-label">邮箱</span>
           <span class="info-value">{{ user?.email || '-' }}</span>
@@ -23,8 +36,31 @@
           <span class="info-value info-value-mono">{{ user?.id || '-' }}</span>
         </div>
       </div>
+      </div>
 
-      <div class="profile-actions">
+      <div v-show="activeTab === 'articles'" class="articles-section">
+        <div v-if="myArticles.length === 0" class="empty-state">
+          <p>还没有发布文章</p>
+          <button class="btn-primary" @click="$router.push('/blogs/new')">写第一篇</button>
+        </div>
+        <div v-else class="articles-list">
+          <article
+            v-for="article in myArticles"
+            :key="article.id"
+            class="article-item"
+            @click="$router.push(`/blogs/${article.id}`)"
+          >
+            <h3 class="article-title">{{ article.title }}</h3>
+            <div class="article-meta">
+              <span>{{ formatDate(article.created_at) }}</span>
+              <span>{{ article.view_count }} 阅读</span>
+              <span>{{ article.like_count }} 点赞</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div v-show="activeTab === 'info'" class="profile-actions">
         <button class="btn btn-outline" @click="handleLogout">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -39,15 +75,26 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
+import { useBlogStore } from '@/stores/blogs'
 import UserAvatar from '@/components/UserAvatar.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const blogStore = useBlogStore()
 
-const user = authStore.user
+const user = computed(() => authStore.user)
+const activeTab = ref('info')
+const myArticles = computed(() =>
+  blogStore.blogs.filter(b => b.author_id === user.value?.id)
+)
+
+onMounted(() => {
+  blogStore.fetchBlogs({ author_id: user.value?.id })
+})
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
@@ -175,4 +222,52 @@ function handleLogout() {
   background: #E8F5ED;
   border-color: #97C9A8;
 }
+
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid #E8F0EB;
+  padding: 0 32px;
+}
+.profile-tab {
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6B7D72;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 150ms ease;
+}
+.profile-tab:hover { color: #2D3B30; }
+.profile-tab.active { color: #5A9672; border-bottom-color: #5A9672; }
+
+.articles-section { padding: 24px 32px 32px; }
+.empty-state { text-align: center; padding: 40px 0; color: #6B7D72; }
+.empty-state p { margin-bottom: 16px; }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #5A9672 0%, #7BAF8E 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.articles-list { display: flex; flex-direction: column; gap: 12px; }
+.article-item {
+  padding: 16px;
+  background: #F8FAF8;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.article-item:hover { background: #E8F5ED; }
+.article-title { font-size: 15px; font-weight: 600; color: #2D3B30; margin-bottom: 8px; }
+.article-meta { display: flex; gap: 16px; font-size: 13px; color: #6B7D72; }
 </style>

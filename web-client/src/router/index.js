@@ -24,9 +24,38 @@ const routes = [
     component: () => import('@/views/BlogList.vue'),
   },
   {
+    path: '/blogs/new',
+    name: 'BlogCreate',
+    component: () => import('@/views/BlogEditor.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/blogs/:id',
+    name: 'BlogDetail',
+    component: () => import('@/views/BlogDetail.vue'),
+  },
+  {
+    path: '/blogs/:id/edit',
+    name: 'BlogEdit',
+    component: () => import('@/views/BlogEditor.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/Profile.vue'),
+  },
+  {
+    path: '/foundation',
+    name: 'Foundation',
+    component: () => import('@/views/FoundationView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/dynamics',
+    name: 'Dynamics',
+    component: () => import('@/views/DynamicsView.vue'),
+    meta: { requiresAuth: true },
   },
 ]
 
@@ -41,6 +70,8 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.guest && isLoggedIn) {
     next('/blogs')
+  } else if (to.meta.requiresAuth && !isLoggedIn) {
+    next('/login')
   } else {
     next()
   }

@@ -73,3 +73,4 @@ static/
 ui-ux-pro-max-skill/
 .claude/skills/*/
 !.claude/skills/ui-ux-pro-max/
+.gstack/

@@ -26,13 +26,3 @@ class Blog(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), onupdate=lambda: datetime.now())
 
 
-class Comment(Base):
-    __tablename__ = "comments"
-
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4()))
-    blog_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("blogs.id"), nullable=False)
-    author_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
-    parent_id: Mapped[str | None] = mapped_column(UUID(as_uuid=False), ForeignKey("comments.id"), nullable=True)
-    is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now())
