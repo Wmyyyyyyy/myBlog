@@ -89,6 +89,7 @@ class PubSubConsumer:
             "type": "dynamic",
             "event_type": event_type,
             "user_id": user_id,
+            "target_id": msg.get("target_id"),
             "data": msg.get("data", {})
         }
 

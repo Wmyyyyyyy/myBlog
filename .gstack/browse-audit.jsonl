@@ -64,3 +64,5 @@
 {"ts":"2026-05-13T16:13:20.817Z","cmd":"screenshot","args":"","origin":"http://localhost:5173/login","durationMs":80,"status":"ok","hasCookies":false,"mode":"launched"}
 {"ts":"2026-05-13T16:13:27.880Z","cmd":"goto","args":"http://localhost:5173/foundation","origin":"http://localhost:5173/foundation","durationMs":54,"status":"ok","hasCookies":false,"mode":"launched"}
 {"ts":"2026-05-13T16:13:33.336Z","cmd":"screenshot","args":"","origin":"about:blank","durationMs":58,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-05-14T09:57:33.557Z","cmd":"snapshot","args":"-i","origin":"about:blank","durationMs":24,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-05-14T09:57:48.129Z","cmd":"goto","args":"https://github.com/Wmyyyyyyy/myBlog/actions","origin":"about:blank","durationMs":7124,"status":"error","hasCookies":false,"mode":"launched","error":"page.goto: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - navigating to \"https://github.com/Wmyyyyyyy/myBlog/actions\", waiting until \"domcontentloaded\"\u001b[22m\n"}

@@ -1,9 +1,11 @@
+import json
 from sqlalchemy import select, func, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
 from apps.interactions.models import Favorite, Like, Follow
 from apps.blogs.models import Blog
+from core.redis import redis_client
 
 
 class InteractionService:
@@ -102,6 +104,14 @@ class InteractionService:
                 blog_author_id=blog.author_id
             )
 
+        # 发布动态事件到 Redis
+        await self._publish_dynamic_event(
+            event_type="like_blog",
+            user_id=user_id,
+            target_id=blog_id,
+            data={"blog_id": blog_id}
+        )
+
         return like
 
     async def remove_like(self, user_id: str, blog_id: str) -> bool:
@@ -175,6 +185,14 @@ class InteractionService:
             following_id=following_id
         )
 
+        # 发布动态事件到 Redis
+        await self._publish_dynamic_event(
+            event_type="follow_user",
+            user_id=follower_id,
+            target_id=following_id,
+            data={"target_user_id": following_id}
+        )
+
         return follow
 
     async def unfollow(self, follower_id: str, following_id: str) -> bool:
@@ -237,3 +255,53 @@ class InteractionService:
             select(func.count()).select_from(Follow).where(Follow.follower_id == user_id)
         )
         return result.scalar() or 0
+
+    async def _publish_dynamic_event(
+        self,
+        event_type: str,
+        user_id: str,
+        target_id: str,
+        data: dict
+    ):
+        """发布动态事件到 Redis"""
+        # 获取目标用户的粉丝列表（用于推送）
+        # 对于 follow 事件，target_id 是被关注者，需要获取其粉丝
+        # 对于 like_blog 事件，target_id 是博客ID，需要获取博客作者的粉丝
+        target_user_id = target_id
+
+        if event_type == "follow_user":
+            # follow 事件中 target_id 是被关注者的ID
+            followers = await self.get_followers(target_user_id, limit=100)
+            follower_ids = [f.follower_id for f in followers]
+        elif event_type == "like_blog":
+            # like_blog 事件中 target_id 是博客ID，需要查作者
+            from apps.blogs.models import Blog
+            blog_result = await self.db.execute(
+                select(Blog.author_id).where(Blog.id == target_id)
+            )
+            blog_author_id = blog_result.scalar_one_or_none()
+            if blog_author_id:
+                followers = await self.get_followers(blog_author_id, limit=100)
+                follower_ids = [f.follower_id for f in followers]
+            else:
+                follower_ids = []
+        else:
+            follower_ids = []
+
+        if not follower_ids:
+            return
+
+        message = {
+            "type": "dynamic",
+            "event_type": event_type,
+            "user_id": user_id,
+            "target_id": target_id,
+            "data": data,
+            "target_user_ids": follower_ids
+        }
+
+        try:
+            await redis_client.publish("dynamic_events", json.dumps(message, default=str))
+        except Exception:
+            # Redis 发布失败不应影响主流程
+            pass

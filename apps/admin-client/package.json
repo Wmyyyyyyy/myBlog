@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "@myblog/api-client": "workspace:*",
     "@myblog/shared-types": "workspace:*",
     "axios": "^1.6.0",

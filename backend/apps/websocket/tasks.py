@@ -13,7 +13,7 @@ async def _purge_loop():
             await manager.purge_inactive(timeout=PURGE_TIMEOUT)
         except asyncio.CancelledError:
             break
-        except Exception:
+        except Exception as e:
             # 记录错误但不中断循环
             import logging
             logging.warning(f"Error in purge loop: {e}")
@@ -27,8 +27,12 @@ def start_purge_task():
     _purge_task = asyncio.create_task(_purge_loop())
 
 
-def stop_purge_task():
+async def stop_purge_task():
     global _purge_task
     if _purge_task:
         _purge_task.cancel()
+        try:
+            await _purge_task
+        except asyncio.CancelledError:
+            pass
         _purge_task = None

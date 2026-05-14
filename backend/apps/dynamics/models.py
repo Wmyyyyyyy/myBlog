@@ -20,6 +20,7 @@ class DynamicEvent(Base):
     target_id: Mapped[str] = mapped_column(String(255), nullable=True)  # 目标ID（博客ID、用户ID等）
     target_title: Mapped[str] = mapped_column(String(255), nullable=True)  # 目标标题（如博客标题）
     target_user_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=True)  # 关联用户（如被点赞的博客作者）
+    user_avatar: Mapped[str | None] = mapped_column(String(500), nullable=True)  # 用户头像
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now())
 
     __table_args__ = (

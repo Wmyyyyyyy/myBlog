@@ -1,3 +1,4 @@
+import json
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -8,6 +9,7 @@ from apps.comments.models import Comment
 from apps.users.models import User
 from apps.blogs.schemas import BlogCreate, BlogUpdate
 from core.moderation import DFAFilter, ModerationAction, get_filter, ModerationResult
+from core.redis import redis_client
 
 
 class BlogService:
@@ -54,6 +56,14 @@ class BlogService:
         from apps.dynamics.services import DynamicService
         dynamic_service = DynamicService(self.db)
         await dynamic_service.record_blog_post(blog)
+
+        # 发布动态事件到 Redis
+        await self._publish_dynamic_event(
+            event_type="blog_post",
+            user_id=author_id,
+            target_id=blog.id,
+            data={"title": blog.title}
+        )
 
         return blog
 
@@ -125,3 +135,37 @@ class BlogService:
         if blog:
             blog.view_count += 1
             await self.db.flush()
+
+    async def _publish_dynamic_event(
+        self,
+        event_type: str,
+        user_id: str,
+        target_id: str,
+        data: dict
+    ):
+        """发布动态事件到 Redis"""
+        from apps.interactions.services import InteractionService
+        interaction_service = InteractionService(self.db)
+
+        follower_ids = []
+        if event_type == "blog_post":
+            followers = await interaction_service.get_followers(user_id, limit=100)
+            follower_ids = [f.follower_id for f in followers]
+
+        if not follower_ids:
+            return
+
+        message = {
+            "type": "dynamic",
+            "event_type": event_type,
+            "user_id": user_id,
+            "target_id": target_id,
+            "data": data,
+            "target_user_ids": follower_ids
+        }
+
+        try:
+            await redis_client.publish("dynamic_events", json.dumps(message, default=str))
+        except Exception:
+            # Redis 发布失败不应影响主流程
+            pass

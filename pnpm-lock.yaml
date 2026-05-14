@@ -17,6 +17,9 @@ importers:
 
   apps/admin-client:
     dependencies:
+      '@element-plus/icons-vue':
+        specifier: ^2.3.2
+        version: 2.3.2(vue@3.5.34)
       '@myblog/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client

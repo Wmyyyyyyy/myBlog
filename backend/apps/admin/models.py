@@ -58,7 +58,7 @@ class LoginLog(Base):
     id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4()))
     ip_address: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
     user_agent: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    login_time: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(), index=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False)
     fail_reason: Mapped[str | None] = mapped_column(String(200), nullable=True)
     admin_id: Mapped[str | None] = mapped_column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=True)

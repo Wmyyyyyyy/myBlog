@@ -319,7 +319,7 @@ class AdminSecurityService:
         log = LoginLog(
             ip_address=ip_address,
             user_agent=user_agent,
-            login_time=datetime.now(),
+            created_at=datetime.now(),
             status=status,
             admin_id=admin_id,
             fail_reason=fail_reason,
@@ -338,7 +338,7 @@ class AdminSecurityService:
             .where(
                 LoginLog.ip_address == ip_address,
                 LoginLog.status == "failed",
-                LoginLog.login_time >= cutoff,
+                LoginLog.created_at >= cutoff,
             )
         )
         failed_count = result.scalar() or 0
@@ -455,7 +455,7 @@ class AdminSecurityService:
         if status:
             query = query.where(LoginLog.status == status)
 
-        query = query.order_by(LoginLog.login_time.desc()).offset(skip).limit(limit)
+        query = query.order_by(LoginLog.created_at.desc()).offset(skip).limit(limit)
         result = await db.execute(query)
         logs = result.scalars().all()
 
@@ -464,7 +464,7 @@ class AdminSecurityService:
                 "id": log.id,
                 "ip_address": log.ip_address,
                 "user_agent": log.user_agent,
-                "login_time": log.login_time,
+                "created_at": log.created_at,
                 "status": log.status,
                 "fail_reason": log.fail_reason,
                 "admin_id": log.admin_id,
@@ -1083,7 +1083,7 @@ class LoginLogService:
         log = LoginLog(
             ip_address=ip,
             user_agent=user_agent,
-            login_time=datetime.now(),
+            created_at=datetime.now(),
             status=result,
             fail_reason=fail_reason,
             admin_id=user_id
@@ -1115,13 +1115,13 @@ class LoginLogService:
 
         if start_date:
             start_dt = datetime.combine(start_date, datetime.min.time())
-            query = query.where(LoginLog.login_time >= start_dt)
-            count_query = count_query.where(LoginLog.login_time >= start_dt)
+            query = query.where(LoginLog.created_at >= start_dt)
+            count_query = count_query.where(LoginLog.created_at >= start_dt)
 
         if end_date:
             end_dt = datetime.combine(end_date, datetime.max.time())
-            query = query.where(LoginLog.login_time <= end_dt)
-            count_query = count_query.where(LoginLog.login_time <= end_dt)
+            query = query.where(LoginLog.created_at <= end_dt)
+            count_query = count_query.where(LoginLog.created_at <= end_dt)
 
         # 获取总数
         total_result = await db.execute(count_query)
@@ -1129,7 +1129,7 @@ class LoginLogService:
 
         # 分页
         offset = (page - 1) * page_size
-        query = query.offset(offset).limit(page_size).order_by(LoginLog.login_time.desc())
+        query = query.offset(offset).limit(page_size).order_by(LoginLog.created_at.desc())
         result = await db.execute(query)
         logs = result.scalars().all()
 

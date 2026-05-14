@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     await consumer.start()
     start_purge_task()
     yield
-    stop_purge_task()
+    await stop_purge_task()
     await consumer.stop()
     await close_redis()
 

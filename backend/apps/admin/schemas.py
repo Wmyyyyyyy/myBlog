@@ -267,7 +267,6 @@ class IPBanItem(BaseModel):
     banned_by: str
     banned_at: datetime
     expires_at: Optional[datetime] = None
-    is_active: bool = True
 
     model_config = {"from_attributes": True}
 
