@@ -3,7 +3,10 @@
     "allow": [
       "Bash(E:/code/myBlog/backend/.venv/Scripts/python.exe *)",
       "Bash(E:/code/myBlog/backend/.venv/Scripts/pip.exe *)",
-      "Bash(PYTHONPATH=E:/code/myBlog/backend *)"
+      "Bash(PYTHONPATH=E:/code/myBlog/backend *)",
+      "Bash(mkdir -p \"E:/code/myBlog/.understand-anything/intermediate\")",
+      "Bash(mkdir -p \"E:/code/myBlog/.understand-anything/tmp\")",
+      "Bash(npx skills *)"
     ]
   }
 }

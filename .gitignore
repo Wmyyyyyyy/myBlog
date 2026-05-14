@@ -71,6 +71,6 @@ static/
 
 # Skills (local plugins)
 ui-ux-pro-max-skill/
-.claude/skills/*/
+.claude/*/
 !.claude/skills/ui-ux-pro-max/
 .gstack/
