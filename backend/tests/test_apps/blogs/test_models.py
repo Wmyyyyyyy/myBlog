@@ -9,6 +9,8 @@ class TestBlogModel:
             title="Test Blog",
             content="Test content",
             author_id="test-uuid",
+            status="published",
+            is_deleted=False,
         )
         assert blog.title == "Test Blog"
         assert blog.status == "published"

@@ -17,7 +17,9 @@ class TestBlogService:
         )
         mock_filter_instance.check.return_value = moderation_result
 
-        with patch('apps.blogs.services.get_filter', return_value=mock_filter_instance):
+        with patch('apps.blogs.services.get_filter', return_value=mock_filter_instance), \
+             patch.object(BlogService, '_publish_dynamic_event', new_callable=AsyncMock), \
+             patch('apps.dynamics.services.DynamicService.record_blog_post', new_callable=AsyncMock):
             service = BlogService(mock_db)
             blog_data = BlogCreate(
                 title="Test Blog",
@@ -66,7 +68,9 @@ class TestBlogService:
         )
         mock_filter_instance.check.return_value = moderation_result
 
-        with patch('apps.blogs.services.get_filter', return_value=mock_filter_instance):
+        with patch('apps.blogs.services.get_filter', return_value=mock_filter_instance), \
+             patch.object(BlogService, '_publish_dynamic_event', new_callable=AsyncMock), \
+             patch('apps.dynamics.services.DynamicService.record_blog_post', new_callable=AsyncMock):
             service = BlogService(mock_db)
             blog_data = BlogCreate(
                 title="Test",
