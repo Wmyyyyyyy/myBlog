@@ -145,6 +145,16 @@ async def get_interaction_stats(
     return await service.get_interaction_stats(db, days)
 
 
+@router.get("/dashboard/online-users")
+async def get_online_users(
+    current_admin: User = Depends(get_current_admin),
+):
+    """Get count of currently online users via WebSocket connections"""
+    from apps.websocket.manager import manager
+    count = await manager.get_online_count()
+    return {"online_count": count}
+
+
 # ==================== User Management ====================
 
 @router.get("/users", response_model=list[UserItem])
