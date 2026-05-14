@@ -14,7 +14,7 @@ class DynamicEvent(Base):
     """
     __tablename__ = "dynamic_events"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True)
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
     event_type: Mapped[str] = mapped_column(String(50), nullable=False)  # blog_post, like_blog, follow_user
     target_id: Mapped[str] = mapped_column(String(255), nullable=True)  # 目标ID（博客ID、用户ID等）
