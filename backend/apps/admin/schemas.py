@@ -83,6 +83,10 @@ class BanUserRequest(BaseModel):
     reason: Optional[str] = None
 
 
+class UnbanUserRequest(BaseModel):
+    user_id: str
+
+
 class BanUserResponse(BaseModel):
     message: str
     banned_until: Optional[datetime] = None
@@ -90,6 +94,30 @@ class BanUserResponse(BaseModel):
 
 class ResetPasswordResponse(BaseModel):
     message: str
+    new_password: Optional[str] = None
+
+
+class UserItem(BaseModel):
+    id: str
+    username: str
+    email: Optional[str] = None
+    is_active: bool
+    is_admin: bool
+    is_banned: bool
+    created_at: datetime
+    blog_count: int
+    comment_count: int
+
+    model_config = {"from_attributes": True}
+
+
+class UpdateUserRequest(BaseModel):
+    email: Optional[str] = None
+    is_active: Optional[bool] = None
+    is_admin: Optional[bool] = None
+
+
+class ResetPasswordRequest(BaseModel):
     new_password: Optional[str] = None
 
 
@@ -106,6 +134,28 @@ class BlogListItem(BaseModel):
     like_count: int
 
     model_config = {"from_attributes": True}
+
+
+class BlogItem(BaseModel):
+    id: str
+    title: str
+    content: str
+    author_id: str
+    author_username: str
+    status: str
+    is_sensitive: bool
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    comment_count: int
+    like_count: int
+
+    model_config = {"from_attributes": True}
+
+
+class UpdateBlogRequest(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    status: Optional[str] = None
 
 
 class BlogListResponse(BaseModel):
@@ -127,6 +177,23 @@ class CommentListItem(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class CommentItem(BaseModel):
+    id: str
+    content: str
+    author_id: str
+    author_username: str
+    blog_id: str
+    blog_title: str
+    is_sensitive: bool
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class UpdateCommentRequest(BaseModel):
+    content: Optional[str] = None
 
 
 class CommentListResponse(BaseModel):
@@ -195,13 +262,12 @@ class SecurityLogResponse(BaseModel):
 
 class IPBanItem(BaseModel):
     id: str
-    ip: str
-    ban_type: str
+    ip_address: str
     reason: Optional[str] = None
-    ban_count: int = 0
-    expired_at: Optional[datetime] = None
-    created_at: datetime
-    created_by: Optional[str] = None
+    banned_by: str
+    banned_at: datetime
+    expires_at: Optional[datetime] = None
+    is_active: bool = True
 
     model_config = {"from_attributes": True}
 
@@ -214,8 +280,7 @@ class IPBanListResponse(BaseModel):
 
 
 class IPBanCreate(BaseModel):
-    ip: str
-    ban_type: str = Field("permanent", pattern="^(permanent|temporary)$")
+    ip_address: str
     reason: Optional[str] = None
     expires_in_minutes: Optional[int] = None
 
