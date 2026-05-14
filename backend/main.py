@@ -15,11 +15,14 @@ from apps.dynamics.router import router as dynamics_router
 from apps.admin.router import router as admin_router
 from apps.websocket.router import router as websocket_router
 from apps.websocket.consumer import consumer
+from apps.websocket.tasks import start_purge_task, stop_purge_task
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await consumer.start()
+    start_purge_task()
     yield
+    stop_purge_task()
     await consumer.stop()
     await close_redis()
 
